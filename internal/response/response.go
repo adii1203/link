@@ -3,9 +3,10 @@ package response
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"net/http"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Response struct {
@@ -49,6 +50,9 @@ func ValidationErrors(errs validator.ValidationErrors) Response {
 			errMsg = append(errMsg, fmt.Sprintf("field %s is required", err.Field()))
 			fmt.Println(err.Tag())
 			fmt.Println(err.Error())
+		case "base64":
+			errMsg = append(errMsg, fmt.Sprintf("field %s is invalid", err.Field()))
+
 		case "url":
 			errMsg = append(errMsg, fmt.Sprintf("url %s is invalid", err.Value()))
 
