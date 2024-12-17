@@ -6,6 +6,7 @@ import (
 
 	"github.com/adii1203/link/internal/handlers/link"
 	"github.com/adii1203/link/internal/initializers"
+	"github.com/adii1203/link/internal/middlewares"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("POST /api/links", link.New(store))
+	router.Handle("POST /api/links", middlewares.ValidatePayload(link.New(store)))
 
 	server := http.Server{
 		Addr:    "localhost:3000",
