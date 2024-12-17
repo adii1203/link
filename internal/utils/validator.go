@@ -2,12 +2,15 @@ package utils
 
 import (
 	"errors"
-	"github.com/go-playground/validator/v10"
 	"reflect"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
 var validate *validator.Validate
+
+const base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 func init() {
 	validate = validator.New()
