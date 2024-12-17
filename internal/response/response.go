@@ -9,14 +9,23 @@ import (
 )
 
 type Response struct {
-	Status string `json:"status"`
-	Error  string `json:"error"`
+	Status string      `json:"status"`
+	Error  string      `json:"error"`
+	Data   interface{} `json:"data"`
 }
 
 const (
 	StatusOK    = "OK"
 	StatusError = "Error"
 )
+
+func SuccessResponse(data interface{}) Response {
+	return Response{
+		Status: StatusOK,
+		Error:  "",
+		Data:   data,
+	}
+}
 
 func GenericError(err error) Response {
 	return Response{
@@ -25,10 +34,10 @@ func GenericError(err error) Response {
 	}
 }
 
-func WriteJson(w http.ResponseWriter, status int, data interface{}) error {
+func WriteJson(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(data)
+	json.NewEncoder(w).Encode(data)
 }
 
 func ValidationErrors(errs validator.ValidationErrors) Response {
