@@ -9,8 +9,8 @@ import (
 )
 
 type Storage interface {
-	CreateLink(url, key string) (uint, error)
-	GetKey(key string) bool
+	CreateLink(linkData *models.Link) (*models.Link, error)
+	GetKey(key string) (bool, *models.Link, error)
 }
 
 type Postgres struct {
@@ -23,24 +23,31 @@ func New() (*Postgres, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Postgres{
 		Db: db,
 	}, nil
 }
 
-func (p *Postgres) CreateLink(url, key string) (uint, error) {
-	link := models.Link{DestinationUrl: url, Key: key}
-	result := p.Db.Create(&link)
+func (p *Postgres) CreateLink(linkData *models.Link) (*models.Link, error) {
+	result := p.Db.Create(linkData)
 	if result.Error != nil {
-		return 0, result.Error
+		return nil, result.Error
 	}
-	return link.ID, nil
+	return linkData, nil
 }
 
-func (p *Postgres) GetKey(key string) bool {
-	tx := p.Db.Where("key = ?", key).First(&models.Link{})
+func (p *Postgres) GetKey(slug string) (bool, *models.Link, error) {
+	link := &models.Link{}
+	tx := p.Db.Where("slug = ?", slug).First(link)
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		return false
+		return false, nil, tx.Error
 	}
-	return true
+
+	return true, link, nil
 }
+
+// func (p *Postgres) IncrementClicks(linkId uint) {
+// 	p.Db.Model(&models.LinkAnalytics{}).Where("lind_id = ?", linkId).Update("clicks", gorm.Expr("clicks + ?", 1))
+
+// }
