@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/adii1203/link/internal/handlers/link"
 	"github.com/adii1203/link/internal/initializers"
@@ -18,9 +19,12 @@ func main() {
 	router := http.NewServeMux()
 
 	router.Handle("POST /api/links", middlewares.ValidatePayload(link.New(store)))
+	router.Handle("GET /api/links/metadata", link.Metadata())
+	router.Handle("GET /{slug}", middlewares.IsCrawler(link.Redirect(store)))
 
+	port := os.Getenv("PORT")
 	server := http.Server{
-		Addr:    "localhost:3000",
+		Addr:    os.Getenv(":" + port),
 		Handler: router,
 	}
 
