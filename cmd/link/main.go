@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -24,12 +25,14 @@ func main() {
 
 	port := os.Getenv("PORT")
 	server := http.Server{
-		Addr:    os.Getenv(":" + port),
+		Addr:    ":" + port,
 		Handler: router,
 	}
 
+	slog.Info("server started", "port", port)
 	err = server.ListenAndServe()
 	if err != nil {
-		log.Fatal("error server starting")
+		log.Fatal("error server starting", err)
 	}
+
 }
